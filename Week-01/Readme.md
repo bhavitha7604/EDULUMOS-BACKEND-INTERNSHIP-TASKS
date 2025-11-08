@@ -34,13 +34,11 @@ It focuses on REST API design, data persistence, and HTTP redirection.
 ---
 
 🚀 Setup & Run
-
 git clone <repo-url>
 cd url-shortener
 npm install
 
 Create a .env file:
-
 PORT=3000
 MONGODB_URI=mongodb://localhost:27017/urlshortener
 BASE_URL=http://localhost:2500
