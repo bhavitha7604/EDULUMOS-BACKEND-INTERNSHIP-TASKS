@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Node.js File Uploader</title>
+
+<style>
+    body {
+        font-family: "Segoe UI", Arial;
+        background: #f2f4f8;
+        display: flex;
+        justify-content: center;
+        padding-top: 40px;
+    }
+
+    .container {
+        background: white;
+        width: 450px;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    #fileInput {
+        display: none;
+    }
+
+    .file-label {
+        display: inline-block;
+        background: #0066ff;
+        padding: 10px 20px;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.2s ease-in-out;
+    }
+
+    .file-label:hover {
+        background: #004bcc;
+    }
+
+    #fileCount {
+        margin-left: 10px;
+        font-weight: bold;
+        color: #444;
+    }
+
+    #submitBtn {
+        margin-top: 20px;
+        padding: 12px;
+        width: 100%;
+        font-size: 15px;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        background: #28a745;
+        color: white;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    #submitBtn:hover {
+        background: #1c7c32;
+    }
+
+    .status-box {
+        margin-top: 20px;
+    }
+
+    .file-list-box {
+        margin-top: 15px;
+        background: #f8fafc;
+        border-left: 4px solid #0066ff;
+        padding: 10px 15px;
+        border-radius: 10px;
+        font-size: 14px;
+        white-space: pre-line;
+        font-weight: 500;
+        color: #333;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Node.js File Uploader</h2>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label class="file-label" for="fileInput">Choose Files</label>
+        <input type="file" id="fileInput" name="myFiles" multiple>
+        <span id="fileCount">No file selected</span>
+
+        <button id="submitBtn" type="submit">Upload</button>
+    </form>
+
+    <div class="status-box">
+        <h3>Status: <span id="status"></span></h3>
+        <h3>Files Uploaded:</h3>
+        <div id="uploadedFiles" class="file-list-box"></div>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById("fileInput");
+    const fileCount = document.getElementById("fileCount");
+    const statusText = document.getElementById("status");
+    const uploadedFilesText = document.getElementById("uploadedFiles");
+
+    fileInput.addEventListener("change", () => {
+        const count = fileInput.files.length;
+        fileCount.textContent =
+            count > 0 ? `${count} file${count > 1 ? 's' : ''} selected` : "No file selected";
+    });
+
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        for (let file of fileInput.files) {
+            formData.append("myFiles", file);
+        }
+
+        const res = await fetch("/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+            statusText.innerHTML = `<span style="color:#28a745; font-weight:600;">success ✓</span>`;
+        } else {
+            statusText.innerHTML = `<span style="color:#dc3545; font-weight:600;">error ✗</span>`;
+        }
+        
+        uploadedFilesText.textContent = data.message.join("\n");
+    });
+</script>
+
+</body>
+</html>
